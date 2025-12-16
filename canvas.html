@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchKeyboard734</title>
+</head>
+<body>
+    <canvas id="c" width="500" height="500" style="border:1px solid #000"></canvas>
+    <button id="send">Send</button>
+
+    <script type="module">
+        // Import Firebase SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1ruKe5j5Uiox6Prwq_QHiMd3XkB23C6w",
+            authDomain: "archsite-4fed2.firebaseapp.com",
+            projectId: "archsite-4fed2",
+            storageBucket: "archsite-4fed2.firebasestorage.app",
+            messagingSenderId: "785346250762",
+            appId: "1:785346250762:web:876e502173e9075b66f7f3"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Canvas setup
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d");
+        let drawing = false;
+
+        // Drawing event handlers
+        canvas.onmousedown = () => drawing = true;
+        canvas.onmouseup = () => drawing = false;
+        canvas.onmousemove = e => {
+            if (!drawing) return;
+            ctx.fillRect(e.offsetX, e.offsetY, 4, 4);
+        };
+
+        // Send drawing to Firebase
+        document.getElementById("send").onclick = async () => {
+            const img = canvas.toDataURL("image/png");
+            await addDoc(collection(db, "drawings"), { 
+                image: img, 
+                time: Date.now() 
+            });
+            alert("Sent!");
+        };
+    </script>
+</body>
+</html>
